@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Validate on DevHub
-        uses: ../../sf-deploy.yml
+        uses: ./.github/actions/sf-deploy
         with:
           SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
           DRY_RUN: true
