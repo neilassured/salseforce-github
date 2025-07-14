@@ -18,7 +18,7 @@ jobs:
       - name: Deploy on DevHub
         uses: ./.github/actions/sf-deploy
         with:
-          SFDX_AUTH_URL`: ${{ secrets.SFDX_AUTH_URL }}
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
           DRY_RUN: false
           TESTS_TO_RUN: StarWarsControllerTest
           TEST_LEVEL: RunSpecifiedTests
