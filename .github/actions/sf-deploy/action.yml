@@ -46,10 +46,38 @@ runs:
       shell: bash
       run: |
         sf org login sfdx-url --set-default --sfdx-url-file <(echo "${{ inputs.SFDX_AUTH_URL }}")
-    - name: Generate package.xml
+    - name: Generate package.xml from changed files
       shell: bash
       run: |
-        sf project generate manifest --source-dir ${{ inputs.SOURCE_DIRECTORY }} --output-dir manifest       
+        # Get list of changed files in force-app directory
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # For PRs, compare with base branch
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "^${{ inputs.SOURCE_DIRECTORY }}/" || true)
+        else
+          # For pushes, get files changed in last commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep "^${{ inputs.SOURCE_DIRECTORY }}/" || true)
+        fi
+        
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No files changed in ${{ inputs.SOURCE_DIRECTORY }}, skipping deployment"
+          exit 0
+        fi
+        
+        # Create a temporary directory for changed files
+        mkdir -p temp-changed-files
+        
+        # Copy only changed files to temp directory
+        echo "$CHANGED_FILES" | while read -r file; do
+          if [ -f "$file" ]; then
+            # Create directory structure in temp
+            dir=$(dirname "temp-changed-files/$file")
+            mkdir -p "$dir"
+            cp "$file" "temp-changed-files/$file"
+          fi
+        done
+        
+        # Generate package.xml from changed files only
+        sf project generate manifest --source-dir temp-changed-files --output-dir manifest       
     - name: Deploy to Environment
       shell: bash
       run: |
