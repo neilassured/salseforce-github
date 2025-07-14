@@ -13,8 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Validate on DevHub
-        uses: jawills/sf-deploy@v1.0
+        uses: ../../sf-deploy.yml
         with:
           SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
           DRY_RUN: true
+          TESTS_TO_RUN: StarWarsControllerTest
+          TEST_LEVEL: RunSpecifiedTests
       
