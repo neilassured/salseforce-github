@@ -1,0 +1,42 @@
+name: Validate Master Pull request
+
+on:
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'force-app/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Read PR Body and extract test classes
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "$PR_BODY" > ./pr_body.txt
+          node ./parsePR.js
+          echo "APEX_TESTS=$(cat testsToRun.txt)" >> $GITHUB_ENV
+
+      - name: Deploy To DevHub (specified tests)
+        if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
+        uses: ./.github/actions/sf-deploy
+        with:
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+          DRY_RUN: true
+          TESTS_TO_RUN: ${{ env.APEX_TESTS }}
+          TEST_LEVEL: RunSpecifiedTests
+      
+      - name: Deploy To DevHub (all tests)
+        if: ${{ env.APEX_TESTS == 'all' }}
+        uses: ./.github/actions/sf-deploy
+        with:
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+          DRY_RUN: true
+          TEST_LEVEL: RunLocalTests
+      

@@ -8,4 +8,4 @@ CRM-XXX
 
 ### Apex Tests to Run
 
-Apex::[DemandsNeedsPDFControllerTest]::Apex
+Apex::[all]::Apex

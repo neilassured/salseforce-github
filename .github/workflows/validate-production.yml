@@ -1,4 +1,4 @@
-name: Validate DevHub Pull request
+name: Validate Master Pull request
 
 on:
   pull_request:
@@ -10,6 +10,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
