@@ -3,6 +3,7 @@
 public with sharing class JediMindControllerTest {
     @isTest
     static void testJediMindController() {
+        /*COMMENT*/
         JediMindController controller = new JediMindController();
         List<String> characters = controller.getJediMasters();
         System.assertEquals(3, characters.size());
