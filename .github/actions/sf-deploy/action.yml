@@ -58,6 +58,7 @@ runs:
             --wait ${{ inputs.WAIT }}
             --test-level ${{ inputs.TEST_LEVEL }}
             --verbose
+            --ignore-conflicts
           )
         if [ "${{ inputs.DRY_RUN }}" = "true" ]; then
           deployFlags+=( --dry-run )
